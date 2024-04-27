@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { useFetch } from './hooks/useFetch'
 import Nav from './Nav'
 import useToggle from './hooks/useToggle'
+import RecipesContext from './RecipesContext'
 
 function App() {
   const [recipes, setRecipes] = React.useState([])
@@ -12,6 +13,8 @@ function App() {
   const [loading, setLoading] = useToggle(true)
   const [error, setError] = React.useState('')
   const { get, post, del, put } = useFetch(`/api/recipes`)
+
+  const value = { recipes, loggedin }
 
   const addRecipe = (recipe) => {
     post('/api/recipes', recipe).then((data) => setRecipes([data, ...recipes]))
@@ -56,34 +59,27 @@ function App() {
   }
 
   return (
-    <main>
-      <BrowserRouter>
-        <Nav setLoggedin={setLoggedin} loggedin={loggedin} />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Recipes
-                recipes={recipes}
-                loggedin={loggedin}
-                addRecipe={addRecipe}
-              />
-            }
-          />
-          <Route
-            path="/:recipeId"
-            element={
-              <RecipeDetail
-                recipes={recipes}
-                deleteRecipe={deleteRecipe}
-                loggedin={loggedin}
-                editRecipe={editRecipe}
-              />
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </main>
+    <RecipesContext.Provider value={value}>
+      <main>
+        <BrowserRouter>
+          <Nav setLoggedin={setLoggedin} />
+          <Routes>
+            {/* NOTE - we no longer pass recipes as a prop to Recipes */}
+            <Route path="/" element={<Recipes addRecipe={addRecipe} />} />
+            <Route
+              path="/:recipeId"
+              element={
+                <RecipeDetail
+                  recipes={recipes}
+                  deleteRecipe={deleteRecipe}
+                  editRecipe={editRecipe}
+                />
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </main>
+    </RecipesContext.Provider>
   )
 }
 

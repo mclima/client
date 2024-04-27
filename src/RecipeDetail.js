@@ -1,8 +1,10 @@
 import React from 'react'
 import { Link, useParams } from 'react-router-dom'
 import FormEditRecipe from './FormEditRecipe'
+import RecipesContext from './RecipesContext'
 
-function RecipeDetail({ recipes, loggedin, deleteRecipe, editRecipe }) {
+function RecipeDetail({ deleteRecipe, editRecipe }) {
+  const { recipes, loggedin } = React.useContext(RecipesContext)
   const { recipeId } = useParams()
   const [recipeDeleted, setRecipeDeleted] = React.useState(false)
 
